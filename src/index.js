@@ -31,28 +31,6 @@ fetch(toyUrl)
     for (const toy of data){
       createCard(toy)
     }
-
-  function createCard(toy){
-      const toyCard = document.createElement("div")
-      toyCard.className = "card"
-      const toyName = document.createElement("h2")
-      toyName.textContent = toy.name
-      const toyImage = document.createElement("img")
-      toyImage.setAttribute("src", toy.image)
-      toyImage.className = "toy-avatar"
-      const toyLikes = document.createElement("p")
-      const numLikes = toy.likes
-      toyLikes.innerHTML = `<span>${numLikes}</span> Likes`
-      const likeButton = document.createElement('button')
-      likeButton.className = "like-btn"
-      likeButton.id = toy.id
-      likeButton.textContent = "Like ❤️"
-      setupLiker(likeButton)
-      toyCard.append(toyName, toyImage, toyLikes, likeButton)
-      toyCollection.append(toyCard)
-    }
-
-    // add event listened to each like button to add 1 to the like count
     const addToyForm = document.querySelector("form.add-toy-form")
     addToyForm.addEventListener("submit",(e)=>{
       e.preventDefault()
@@ -75,25 +53,45 @@ fetch(toyUrl)
       .then(toy => createCard(toy))
       e.target.reset()
     })
+  })
+
+function createCard(toy){
+  const toyCard = document.createElement("div")
+  toyCard.className = "card"
+  const toyName = document.createElement("h2")
+  toyName.textContent = toy.name
+  const toyImage = document.createElement("img")
+  toyImage.setAttribute("src", toy.image)
+  toyImage.className = "toy-avatar"
+  const toyLikes = document.createElement("p")
+  const numLikes = toy.likes
+  toyLikes.innerHTML = `<span>${numLikes}</span> Likes`
+  const likeButton = document.createElement('button')
+  likeButton.className = "like-btn"
+  likeButton.id = toy.id
+  likeButton.textContent = "Like ❤️"
+  setupLiker(likeButton)
+  toyCard.append(toyName, toyImage, toyLikes, likeButton)
+  toyCollection.append(toyCard)
+}
+    // add event listened to each like button to add 1 to the like count
     
-    function setupLiker (button){
-      button.addEventListener("click",(e)=>{
-        const toyId = e.target.id
-        const currentLikes = parseInt(e.target.parentNode.querySelector("span").textContent)
-        const newLikes = currentLikes + 1 
-        fetch(`http://localhost:3000/toys/${toyId}`,{
-          method: "PATCH",
-          headers:
-          {
-            "Content-Type": "application/json",
-            Accept: "application/json"
-          },
-          body: JSON.stringify({"likes": newLikes})
-        }).then(res => res.json())
-        .then(data => e.target.parentNode.querySelector("span").textContent = newLikes)
-      })}
-    })
+function setupLiker (button){
+  button.addEventListener("click",(e)=>{
+    const toyId = e.target.id
+    const currentLikes = parseInt(e.target.parentNode.querySelector("span").textContent)
+    const newLikes = currentLikes + 1 
+    fetch(`http://localhost:3000/toys/${toyId}`,{
+      method: "PATCH",
+      headers:
+      {
+        "Content-Type": "application/json",
+        Accept: "application/json"
+      },
+      body: JSON.stringify({"likes": newLikes})
+    }).then(res => res.json())
+    .then(data => e.target.parentNode.querySelector("span").textContent = newLikes)
+    })} 
 
 
 
-  
