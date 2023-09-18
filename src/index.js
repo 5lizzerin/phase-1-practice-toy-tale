@@ -24,6 +24,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
 const toyUrl = "http://localhost:3000/toys";
 const toyCollection = document.querySelector("#toy-collection")
+const addToyForm = document.querySelector("form.add-toy-form")
+
+addToyForm.addEventListener("submit",(e)=>{
+  e.preventDefault()
+  const inputs = e.target.querySelectorAll("input")
+  const newName = inputs[0].value
+  const newImgUrl = inputs[1].value
+  fetch(toyUrl, {
+    method: "POST",
+    headers:
+    {
+      "Content-Type": "application/json",
+      Accept: "application/json"
+    },
+    body: JSON.stringify({
+      "name": newName,
+      "image": newImgUrl,
+      "likes": 0
+    })
+  }).then(res => res.json())
+  .then(toy => createCard(toy))
+  e.target.reset()
+})
 
 fetch(toyUrl)
   .then(response => response.json())
@@ -31,28 +54,6 @@ fetch(toyUrl)
     for (const toy of data){
       createCard(toy)
     }
-    const addToyForm = document.querySelector("form.add-toy-form")
-    addToyForm.addEventListener("submit",(e)=>{
-      e.preventDefault()
-      const inputs = e.target.querySelectorAll("input")
-      const newName = inputs[0].value
-      const newImgUrl = inputs[1].value
-      fetch(toyUrl, {
-        method: "POST",
-        headers:
-        {
-          "Content-Type": "application/json",
-          Accept: "application/json"
-        },
-        body: JSON.stringify({
-          "name": newName,
-          "image": newImgUrl,
-          "likes": 0
-        })
-      }).then(res => res.json())
-      .then(toy => createCard(toy))
-      e.target.reset()
-    })
   })
 
 function createCard(toy){
@@ -92,6 +93,3 @@ function setupLiker (button){
     }).then(res => res.json())
     .then(data => e.target.parentNode.querySelector("span").textContent = newLikes)
     })} 
-
-
-
