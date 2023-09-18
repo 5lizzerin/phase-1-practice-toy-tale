@@ -29,6 +29,10 @@ fetch(toyUrl)
   .then(response => response.json())
   .then(data => {
     for (const toy of data){
+      createCard(toy)
+    }
+
+  function createCard(toy){
       const toyCard = document.createElement("div")
       toyCard.className = "card"
       const toyName = document.createElement("h2")
@@ -43,14 +47,36 @@ fetch(toyUrl)
       likeButton.className = "like-btn"
       likeButton.id = toy.id
       likeButton.textContent = "Like ❤️"
+      setupLiker(likeButton)
       toyCard.append(toyName, toyImage, toyLikes, likeButton)
       toyCollection.append(toyCard)
     }
 
     // add event listened to each like button to add 1 to the like count
-
-    const likeButtonsArray = document.querySelectorAll('.like-btn')
-    for (button of likeButtonsArray){
+    const addToyForm = document.querySelector("form.add-toy-form")
+    addToyForm.addEventListener("submit",(e)=>{
+      e.preventDefault()
+      const inputs = e.target.querySelectorAll("input")
+      const newName = inputs[0].value
+      const newImgUrl = inputs[1].value
+      fetch(toyUrl, {
+        method: "POST",
+        headers:
+        {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: JSON.stringify({
+          "name": newName,
+          "image": newImgUrl,
+          "likes": 0
+        })
+      }).then(res => res.json())
+      .then(toy => createCard(toy))
+      e.target.reset()
+    })
+    
+    function setupLiker (button){
       button.addEventListener("click",(e)=>{
         const toyId = e.target.id
         const currentLikes = parseInt(e.target.parentNode.querySelector("span").textContent)
@@ -62,26 +88,11 @@ fetch(toyUrl)
             "Content-Type": "application/json",
             Accept: "application/json"
           },
-          body: JSON.stringify({
-            "likes": newLikes
-          })
-
-    
-        })
-
-
-        // let currentLikes = parseInt(e.target.parentNode.querySelector("span").textContent)
-        // e.target.parentNode.querySelector("span").textContent= currentLikes+1
-      })
-  }
-
-    // fetch("http://localhost:3000/toys/",{
-    //   method: "PATCH",
-
-    // })
-})
-
-    
+          body: JSON.stringify({"likes": newLikes})
+        }).then(res => res.json())
+        .then(data => e.target.parentNode.querySelector("span").textContent = newLikes)
+      })}
+    })
 
 
 
